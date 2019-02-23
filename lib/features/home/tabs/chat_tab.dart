@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:whatsup/data/model/chat_entity.dart';
+import 'package:whatsup/models/chat_entity.dart';
 
 typedef OnChatPressed = Function(ChatEntity);
 

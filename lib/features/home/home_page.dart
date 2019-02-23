@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:whatsup/data/model/chat_entity.dart';
+import 'package:whatsup/models/chat_entity.dart';
 import 'package:whatsup/features/chat/chat_page.dart';
 import 'package:whatsup/features/home/tabs/calls_tabs.dart';
 import 'package:whatsup/features/home/tabs/camera_tab.dart';

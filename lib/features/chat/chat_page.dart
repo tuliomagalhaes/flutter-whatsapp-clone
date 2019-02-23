@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'package:whatsup/data/model/chat_entity.dart';
-import 'package:whatsup/data/model/chat_message.dart';
+import 'package:whatsup/models/chat_entity.dart';
+import 'package:whatsup/models/chat_message.dart';
 
 class ChatPage extends StatefulWidget {
 
