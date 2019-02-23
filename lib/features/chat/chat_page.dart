@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:whatsup/data/model/ChatEntity.dart';
+import 'package:intl/intl.dart';
+
+import 'package:whatsup/data/model/chat_entity.dart';
+import 'package:whatsup/data/model/chat_message.dart';
 
 class ChatPage extends StatefulWidget {
 
@@ -15,6 +18,19 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+
+    TextEditingController _textEditingController;
+    ScrollController _scrollController;
+    List<ChatMessage> _chatMessages;
+
+    @override
+    void initState() {
+        super.initState();
+
+        _textEditingController = TextEditingController();
+        _scrollController = ScrollController();
+        _chatMessages = [];
+    }
 
     @override
     Widget build(BuildContext context) {
@@ -102,14 +118,10 @@ class _ChatPageState extends State<ChatPage> {
     }
 
     Widget _buildChat() {
-        /*return Expanded(
-            child: ListView.builder(
-                itemBuilder: (context, index) {
-                    return
-                }
-            ),
-        );*/
-        return Container();
+        return _ChatMessages(
+            chatMessages: _chatMessages,
+            scrollController: _scrollController,
+        );
     }
 
     Widget _buildTextFieldAndSendButton() {
@@ -133,7 +145,7 @@ class _ChatPageState extends State<ChatPage> {
                         buttonColor: Theme.of(context).primaryColor,
                         child: RaisedButton(
                             shape: CircleBorder(),
-                            onPressed: () {},
+                            onPressed: _onPressedSendMessage,
                             child: Icon(
                                 Icons.send,
                                 color: Colors.white,
@@ -145,11 +157,34 @@ class _ChatPageState extends State<ChatPage> {
         );
     }
 
+    void _onPressedSendMessage() {
+        if (_textEditingController.text.length == 0) {
+            return;
+        }
+
+        var now = new DateTime.now();
+        var formatter = new DateFormat('HH:mm');
+        String time = formatter.format(now);
+
+        final ChatMessage chatMessage = ChatMessage(
+            message: _textEditingController.text,
+            time: time
+        );
+
+        _textEditingController.clear();
+        _scrollController.animateTo(0, duration: Duration(milliseconds: 300), curve: Curves.ease);
+
+        setState(() {
+            _chatMessages.insert(0, chatMessage);
+        });
+    }
+
     Widget _buildTextField() {
         return Row(
             children: <Widget>[
                 Flexible(
                     child: TextField(
+                        controller: _textEditingController,
                         decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: "Digite aqui...",
@@ -181,6 +216,97 @@ class _ChatPageState extends State<ChatPage> {
                             onPressed: () => print("Pressed Camera"),
                         ),
                     ],
+                )
+            ],
+        );
+    }
+}
+
+class _ChatMessages extends StatelessWidget {
+
+    final List<ChatMessage> chatMessages;
+    final ScrollController scrollController;
+
+    const _ChatMessages({Key key,
+        this.chatMessages,
+        this.scrollController
+    }) : super(key: key);
+
+    @override
+    Widget build(BuildContext context) {
+        return Expanded(
+            child: ListView.builder(
+                controller: scrollController,
+                reverse: true,
+                itemCount: chatMessages.length,
+                itemBuilder: (context, index) {
+                    return _buildBubbleMessage(this.chatMessages[index]);
+                }
+            ),
+        );
+    }
+
+    Widget _buildBubbleMessage(ChatMessage chatMessage) {
+        return Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+                Container(
+                    margin: EdgeInsets.fromLTRB(40, 4, 20, 10),
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                        color: Color(0xFFE2FEC9),
+                        borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(0),
+                            topLeft: Radius.circular(8.0),
+                            bottomRight: Radius.circular(8.0),
+                            bottomLeft: Radius.circular(8.0)
+                        ),
+                        boxShadow: [
+                            BoxShadow(
+                                blurRadius: .5,
+                                spreadRadius: 1.0,
+                                color: Colors.black.withOpacity(.12)
+                            )
+                        ]
+                    ),
+                    child: _buildBubbleContent(chatMessage),
+                ),
+            ],
+        );
+    }
+
+    Widget _buildBubbleContent(ChatMessage chatMessage) {
+        return Stack(
+            children: <Widget>[
+                Padding(
+                    padding: EdgeInsets.only(right: 52.0),
+                    child: Text(
+                        chatMessage.message,
+                        style: TextStyle(
+                            fontSize: 18.0,
+                        )
+                    ),
+                ),
+                Positioned(
+                    bottom: 0.0,
+                    right: 0.0,
+                    child: Row(
+                        children: <Widget>[
+                            Text(
+                                chatMessage.time,
+                                style: TextStyle(
+                                    color: Colors.black38,
+                                    fontSize: 12.0,
+                                )
+                            ),
+                            SizedBox(width: 3.0),
+                            Icon(
+                                Icons.done_all,
+                                size: 14.0,
+                                color: Colors.black38,
+                            )
+                        ],
+                    ),
                 )
             ],
         );
