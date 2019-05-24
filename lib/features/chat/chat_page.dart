@@ -184,6 +184,9 @@ class _ChatPageState extends State<ChatPage> {
             children: <Widget>[
                 Flexible(
                     child: TextField(
+                        expands: false,
+                        minLines: 1,
+                        maxLines: 3,
                         controller: _textEditingController,
                         decoration: InputDecoration(
                             border: InputBorder.none,
